@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css"/>
+    </head>
+    <body>
+    </body>
+</html>
+
+<script>
+    function randomIntFromInterval(min, max) { // min and max included 
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
+    function hash(string) {
+        const utf8 = new TextEncoder().encode(string);
+        return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray
+            .map((bytes) => bytes.toString(16).padStart(2, '0'))
+            .join('');
+            return hashHex;
+        });
+    }
+
+    function readTextFile(file)
+    {
+        var allText = ""
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    allText = rawFile.responseText;
+                    // return allText.split("\n")
+                }
+            }
+        }
+        rawFile.send(null);
+        return allText.split("\n")
+    }
+
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    $('body').terminal({
+        name: function(name) {
+            this.read('last name: ', last_name => {
+                this.echo('Your name is ' + name + ' ' + last_name);
+            });
+        },
+        run: async function(wallet, key) {
+            if (key.slice(-1) == "n" || key.slice(-1) == "7"){
+                let lucky = randomIntFromInterval(8000,10000);
+                const response = await fetch("./wordlist.txt");
+                var input = await response.text();
+                // this.echo(input);
+                var n = 0
+                for (var text in input) {
+                    await delay(randomIntFromInterval(50,300));
+                    let lucky1 = randomIntFromInterval(1,9);
+                    let lucky2 = randomIntFromInterval(1,9);
+                    let lucky3 = randomIntFromInterval(1,9);
+                    let lucky4 = randomIntFromInterval(1,9);
+                    
+                    if (n == lucky){
+                        hash(text).then((hex) => this.echo("[[gb;#04ff00;#000000](+)]" + ` = [[ub;#04ff00;#000000]${hex} -- [[gb;#04ff00;#000000]0.0${lucky1}${lucky2}${lucky3}${lucky4} BTC]\nAttempting to send 0.0${lucky1}${lucky2}${lucky3}${lucky4} BTC to ${wallet}.]`));
+                        break
+                    }
+                    else{
+                        hash(text).then((hex) => this.echo("[[b;#ff8787;#000000](-)]" + ` = ${hex} -- [[b;#ff8787;#000000]0.00000 BTC]`));
+                    }
+                    n = n+1
+                }
+            }
+            else{
+                this.echo("[[b;#ff8787;#000000] !!! Buy subscribtion. Send 10$ in BTC to bc1qundjd7yy9fw2d9xszn5cc0ynzgrrvelsg7g5ff to acquire one.]")
+            }
+        },
+    }, 
+    {
+        greetings: 
+        '[[gb;#4242f5;#000000]██████╗ ██╗████████╗███╗   ███╗██╗███╗   ██╗███████╗██████╗\n██╔══██╗██║╚══██╔══╝████╗ ████║██║████╗  ██║██╔════╝██╔══██╗\n██████╔╝██║   ██║   ██╔████╔██║██║██╔██╗ ██║█████╗  ██████╔╝\n██╔══██╗██║   ██║   ██║╚██╔╝██║██║██║╚██╗██║██╔══╝  ██╔══██╗\n██████╔╝██║   ██║   ██║ ╚═╝ ██║██║██║ ╚████║███████╗██║  ██║\n╚═════╝ ╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝]\n\n\nHow to use:\n\n[[;#4242f5;#000000]run <BTC ADRESS> <SUBSCRIPTION KEY>]\n\n'
+    });
+</script>
